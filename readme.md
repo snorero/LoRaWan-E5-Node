@@ -136,3 +136,46 @@ You will see the message **Download verified successfully**, once programming is
 ```
 
 Eventhough **RBI_CONF_RFO** is defined as **RBI_CONF_RFO_LP_HP** in `radio_board_if.h`, it will not be used because **USE_BSP_DRIVER** is defined and **BSP_RADIO_GetTxConfig()** function returns **RADIO_CONF_RFO_HP**
+
+#  
+# --------------- SNR --------------
+# Troubleshooting
+## Joined OTAA correctly but no messages are sended.
+```
+###### = JOINED = OTAA =====================
+
+###### ========== MCPS-Indication ==========
+30s040:temp= 21
+30s043:TX on freq 917600000 Hz at DR 2
+60s040:temp= 21
+60s041:TX on freq 917800000 Hz at DR 2
+APP_VERSION:        V1.1.0
+MW_LORAWAN_VERSION: V2.3.0
+MW_RADIO_VERSION:   V1.1.0
+###### OTAA ######
+###### AppKey:      2B:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:3A
+###### NwkKey:      F7:EA:A4:6D:5B:19:5A:18:67:FD:0B:8D:6E:98:FD:D0
+###### ABP  ######
+###### AppSKey:     11:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:2B
+###### NwkSKey:     00:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:1B
+###### DevEui:  13:24:23:53:32:23:42:15
+###### AppEui:  DC:BC:B1:1B:E6:CD:84:6E
+###### DevAddr: 32:30:90:46
+0s036:TX on freq 918200000 Hz at DR 2
+0s410:MAC txDone
+5s394:RX_1 on freq 927500000 Hz at DR 10
+5s526:MAC rxDone
+
+###### = JOINED = OTAA =====================
+
+###### ========== MCPS-Indication ==========
+30s040:temp= 21
+30s043:TX on freq 918000000 Hz at DR 2
+60s040:temp= 21
+60s041:TX on freq 917600000 Hz at DR 2
+90s040:temp= 21
+.
+.
+.
+```
+Solution: Define `LORAWAN_DEFAULT_ACTIVATION_TYPE` OTAA instead ABP in `Projects\Applications\LoRaWAN\LoRaWAN_End_Node\LoRaWAN\App\lora_app.h`
