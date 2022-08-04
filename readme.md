@@ -1,3 +1,163 @@
+# About this project
+
+This project consist in a firmware based on STM32 Cube for LoRa-E5
+
+## General Links
++ [Seeed **Wiki** LoRa-E5 Dev Board](https://wiki.seeedstudio.com/LoRa_E5_Dev_Board/): Official docs.
++ [GitHub/Seeed-Studio/LoRaWan-E5-Node](https://github.com/Seeed-Studio/LoRaWan-E5-Node/tree/qian): This project is a fork of this repository.
+
+# Usage
+
+Important files:  
++ [se-identity.h](Projects\Applications\LoRaWAN\LoRaWAN_End_Node\LoRaWAN\App\se-identity.h): EUIs and Keys
++ [lora_app.c](Projects\Applications\LoRaWAN\LoRaWAN_End_Node\LoRaWAN\App\lora_app.c): USER CODE
++ [lora_app.h](Projects\Applications\LoRaWAN\LoRaWAN_End_Node\LoRaWAN\App\lora_app.h): Define CAYENNE_LPP (yes or not), ACTIVE_REGION (AU915), DEFAULT_DATA_RATE, LORAWAN_DEFAULT_ACTIVATION_TYPE, ADR, etc.
++ [RegionAU915.c](Middlewares\Third_Party\LoRaWAN\Mac\Region\RegionAU915.c): Frequency Sub Band (FSB) mask
+
+Others files
++ [LoRaMacHeaderTypes.h](Middlewares\Third_Party\LoRaWAN\Mac\LoRaMacHeaderTypes.h): Frame counter was modified from here. Not corroborated.
+
+# Useful Links
++ [Base64 to ASCII Online Decoder](https://www.base64decode.org/): Doesn't work with this fw message payload.
++ [Base64 to Hex Online Decoder](https://cryptii.com/pipes/base64-to-hex)
++ [CayenneLPP Online Decoder](https://cayennelpp.online/)
+
+# Results
+## Not cayenne
+```JSON
+{
+	"payload": "ACcQFQH0AAAAAA==",
+	"timestamp": "2022-08-04T20:00:03Z",
+	"FCnt": 5502,
+	"complete_event": {
+		"WirelessDeviceId": "b799f65f-6d99-4696-b39f-945bd5f01bea",
+		"PayloadData": "ACcQFQH0AAAAAA==",
+		"WirelessMetadata": {
+			"LoRaWAN": {
+				"ADR": true,
+				"Bandwidth": 125,
+				"ClassB": false,
+				"CodeRate": "4/5",
+				"DataRate": "5",
+				"DevAddr": "019a9c8f",
+				"DevEui": "1324235332234215",
+				"FCnt": 5502,
+				"FOptLen": 0,
+				"FPort": 2,
+				"Frequency": "917000000",
+				"Gateways": [{
+					"GatewayEui": "ac1f09fffe070870",
+					"Rssi": -57,
+					"Snr": 14
+				}],
+				"MIC": "d44db7be",
+				"MType": "UnconfirmedDataUp",
+				"Major": "LoRaWANR1",
+				"Modulation": "LORA",
+				"PolarizationInversion": false,
+				"SpreadingFactor": 7,
+				"Timestamp": "2022-08-04T20:00:03Z"
+			}
+		}
+	}
+}
+```
+
+## Cayenne LPP
+```JSON
+{
+	"payload": "AHOGoAFnANICaGQ=",
+	"timestamp": "2022-08-04T20:05:39Z",
+	"FCnt": 1,
+	"complete_event": {
+		"WirelessDeviceId": "b799f65f-6d99-4696-b39f-945bd5f01bea",
+		"PayloadData": "AHOGoAFnANICaGQ=",
+		"WirelessMetadata": {
+			"LoRaWAN": {
+				"ADR": true,
+				"Bandwidth": 125,
+				"ClassB": false,
+				"CodeRate": "4/5",
+				"DataRate": "2",
+				"DevAddr": "018f7c96",
+				"DevEui": "1324235332234215",
+				"FCnt": 1,
+				"FOptLen": 0,
+				"FPort": 2,
+				"Frequency": "917600000",
+				"Gateways": [{
+					"GatewayEui": "ac1f09fffe070870",
+					"Rssi": -22,
+					"Snr": 13.25
+				}],
+				"MIC": "1e54464e",
+				"MType": "UnconfirmedDataUp",
+				"Major": "LoRaWANR1",
+				"Modulation": "LORA",
+				"PolarizationInversion": false,
+				"SpreadingFactor": 10,
+				"Timestamp": "2022-08-04T20:05:39Z"
+			}
+		}
+	}
+}
+```
+### Base64_PayloadData to HEX
+`AHOGoAFnANICaGQ=` -> `00 73 86 a0 01 67 00 d2 02 68 64`
+
+### HEX_PayloadData to interpreted CayenneLPP
+```YAML
+10: Barometer	0	(3446.4,)
+7: Temperature Sensor	1	(21.0,)
+8: Humidity Sensor	2	(50.0,)
+```
+
+# Troubleshooting
+## Joined OTAA correctly but no messages are sended.
+```
+###### = JOINED = OTAA =====================
+
+###### ========== MCPS-Indication ==========
+30s040:temp= 21
+30s043:TX on freq 917600000 Hz at DR 2
+60s040:temp= 21
+60s041:TX on freq 917800000 Hz at DR 2
+APP_VERSION:        V1.1.0
+MW_LORAWAN_VERSION: V2.3.0
+MW_RADIO_VERSION:   V1.1.0
+###### OTAA ######
+###### AppKey:      2B:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:3A
+###### NwkKey:      F7:EA:A4:6D:5B:19:5A:18:67:FD:0B:8D:6E:98:FD:D0
+###### ABP  ######
+###### AppSKey:     11:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:2B
+###### NwkSKey:     00:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:1B
+###### DevEui:  13:24:23:53:32:23:42:15
+###### AppEui:  DC:BC:B1:1B:E6:CD:84:6E
+###### DevAddr: 32:30:90:46
+0s036:TX on freq 918200000 Hz at DR 2
+0s410:MAC txDone
+5s394:RX_1 on freq 927500000 Hz at DR 10
+5s526:MAC rxDone
+
+###### = JOINED = OTAA =====================
+
+###### ========== MCPS-Indication ==========
+30s040:temp= 21
+30s043:TX on freq 918000000 Hz at DR 2
+60s040:temp= 21
+60s041:TX on freq 917600000 Hz at DR 2
+90s040:temp= 21
+.
+.
+.
+```
+Solution: Define `LORAWAN_DEFAULT_ACTIVATION_TYPE` OTAA instead ABP in `Projects\Applications\LoRaWAN\LoRaWAN_End_Node\LoRaWAN\App\lora_app.h`
+
+
+# --------------------------------------------------------------------------
+# ------------------------ Original Readme -------------------------------
+
+
 
 # LoRa-E5-LoRaWAN-End-Node
 
@@ -11,7 +171,7 @@ This guide is for LoRa-E5 mini/ LoRa-E5 Development Kit aiming at building sever
 
 - Install [STM32CubeIDE(to compilation and debug)](https://my.st.com/content/my_st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html) and [STM32CubeProgrammer(to program STM32 devices)](https://my.st.com/content/my_st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-programmers/stm32cubeprog.license=1614563305396.product=STM32CubePrg-W64.version=2.6.0.html), also download and extract [STM32Cube MCU Package for STM32WL series(SDK)](https://my.st.com/content/my_st_com/en/products/embedded-software/mcu-mpu-embedded-software/stm32-embedded-software/stm32cube-mcu-mpu-packages/stm32cubewl.license=1608693595598.product=STM32CubeWL.version=1.0.0.html#overview)
 
-- LoRaWAN Gateway connected to LoRaWAN Network Server(e.g. TTN)
+- LoRaWAN Gateway connected to LoRaWAN Network Server(e.g. AWS IoT Core for LoRaWAN)
 
 - Prepare an USB TypeC cable and a ST-LINK. Connect the TypeC cable to the TypeC port for power and serial communication, connect the ST-LINK to the SWD pins like this:
 
@@ -21,30 +181,28 @@ This guide is for LoRa-E5 mini/ LoRa-E5 Development Kit aiming at building sever
 
 - As the hardware design of LoRa-E5 series is a bit different with NUCLEO-WL55JC, the official STM32WL55JC development board from ST, developers need to reconfigure some gpios, to adapt the SDK example to LoRa-E5 series. We have already reconfigured gpios in this example, but we think it is nessary to point out the difference.
 
-|SDK Example Label|GPIO of NUCLEO-WL55JC|GPIO of LoRa-E5 Mini and LoRa-E5 Dev Board|
-|---------|---------------------|------------------------------------------|
-|RF_CTRL1|PC4|PA4|
-|RF_CTRL2|PC5|PA5|
-|RF_CTRL3|PC3|None|
-|BUT1|PA0|PB13 (Boot Button)|
-|BUT2|PA1|None|
-|BUT3|PC6|None|
-|LED1|PB15|None|
-|LED2|PB9|PB5|
-|LED3|PB11|None|
-|DBG1|PB12|PA0 (D0 Button)|
-|DBG2|PB13|PB10|
-|DBG3|PB14|PB3|
-|DBG4|PB10|PB4|
-|Usart|Usart2(PA2/PA3)|Usart1(PB6/PB7)|
+| SDK Example Label | GPIO of NUCLEO-WL55JC | GPIO of LoRa-E5 Mini and LoRa-E5 Dev Board |
+| ----------------- | --------------------- | ------------------------------------------ |
+| RF_CTRL1          | PC4                   | PA4                                        |
+| RF_CTRL2          | PC5                   | PA5                                        |
+| RF_CTRL3          | PC3                   | None                                       |
+| BUT1              | PA0                   | PB13 (Boot Button)                         |
+| BUT2              | PA1                   | None                                       |
+| BUT3              | PC6                   | None                                       |
+| LED1              | PB15                  | None                                       |
+| LED2              | PB9                   | PB5                                        |
+| LED3              | PB11                  | None                                       |
+| DBG1              | PB12                  | PA0 (D0 Button)                            |
+| DBG2              | PB13                  | PB10                                       |
+| DBG3              | PB14                  | PB3                                        |
+| DBG4              | PB10                  | PB4                                        |
+| Usart             | Usart2(PA2/PA3)       | Usart1(PB6/PB7)                            |
 
 ## Getting Started
 
 ### 1. Build the LoRaWAN End Node Example
 
-- **Step 1.** Click [here](https://github.com/Seeed-Studio/LoRaWan-E5-Node/tree/qian) to visit **Seeed-Studio/LoRaWan-E5-Node** repository and download it as a ZIP file
-
-<p style="text-align:center;"><img src="https://files.seeedstudio.com/wiki/LoRa-E5-mini/main-branch.png" alt="pir" width="1000" height="auto"></p>
+- **Step 1.** Clone repository
 
 - **Step 2.** Extract the ZIP file and navigate to `LoRaWan-E5-Node > Projects > Applications > LoRaWAN > LoRaWAN_End_Node > STM32CubeIDE`
 
@@ -137,45 +295,3 @@ You will see the message **Download verified successfully**, once programming is
 
 Eventhough **RBI_CONF_RFO** is defined as **RBI_CONF_RFO_LP_HP** in `radio_board_if.h`, it will not be used because **USE_BSP_DRIVER** is defined and **BSP_RADIO_GetTxConfig()** function returns **RADIO_CONF_RFO_HP**
 
-#  
-# --------------- SNR --------------
-# Troubleshooting
-## Joined OTAA correctly but no messages are sended.
-```
-###### = JOINED = OTAA =====================
-
-###### ========== MCPS-Indication ==========
-30s040:temp= 21
-30s043:TX on freq 917600000 Hz at DR 2
-60s040:temp= 21
-60s041:TX on freq 917800000 Hz at DR 2
-APP_VERSION:        V1.1.0
-MW_LORAWAN_VERSION: V2.3.0
-MW_RADIO_VERSION:   V1.1.0
-###### OTAA ######
-###### AppKey:      2B:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:3A
-###### NwkKey:      F7:EA:A4:6D:5B:19:5A:18:67:FD:0B:8D:6E:98:FD:D0
-###### ABP  ######
-###### AppSKey:     11:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:2B
-###### NwkSKey:     00:7E:15:16:28:AE:D2:A6:AB:F7:15:88:09:CF:4F:1B
-###### DevEui:  13:24:23:53:32:23:42:15
-###### AppEui:  DC:BC:B1:1B:E6:CD:84:6E
-###### DevAddr: 32:30:90:46
-0s036:TX on freq 918200000 Hz at DR 2
-0s410:MAC txDone
-5s394:RX_1 on freq 927500000 Hz at DR 10
-5s526:MAC rxDone
-
-###### = JOINED = OTAA =====================
-
-###### ========== MCPS-Indication ==========
-30s040:temp= 21
-30s043:TX on freq 918000000 Hz at DR 2
-60s040:temp= 21
-60s041:TX on freq 917600000 Hz at DR 2
-90s040:temp= 21
-.
-.
-.
-```
-Solution: Define `LORAWAN_DEFAULT_ACTIVATION_TYPE` OTAA instead ABP in `Projects\Applications\LoRaWAN\LoRaWAN_End_Node\LoRaWAN\App\lora_app.h`
